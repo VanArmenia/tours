@@ -30,12 +30,11 @@ export class BookingsService {
       )
     }
 
-    const price =
-      date.priceOverride ??
-      date.tour.price
+    const price = date.priceOverride ?? date.tour.price
 
-    const totalPrice =
-      price * data.peopleCount
+    const totalPrice = price * data.peopleCount
+
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
 
     const booking =
       await this.prisma.$transaction(
@@ -49,16 +48,16 @@ export class BookingsService {
             },
           })
 
-          return tx.booking.create({
-            data: {
-              userId,
-              tourDateId: date.id,
-              peopleCount:
-                data.peopleCount,
-              totalPrice,
-              status: 'PENDING',
-            },
-          })
+         return tx.booking.create({
+          data: {
+            userId,
+            tourDateId: date.id,
+            peopleCount: data.peopleCount,
+            totalPrice,
+            status: 'RESERVED',
+            expiresAt,
+          },
+        })
         },
       )
 

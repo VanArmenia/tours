@@ -20,8 +20,11 @@ export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
 export const BookingStatus = {
   PENDING: 'PENDING',
-  PAID: 'PAID',
+  RESERVED: 'RESERVED',
+  CONFIRMED: 'CONFIRMED',
   CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED',
+  REFUNDED: 'REFUNDED',
   COMPLETED: 'COMPLETED'
 } as const
 
@@ -39,9 +42,19 @@ export type TourStatus = (typeof TourStatus)[keyof typeof TourStatus]
 
 export const PaymentStatus = {
   PENDING: 'PENDING',
-  SUCCESS: 'SUCCESS',
+  REQUIRES_ACTION: 'REQUIRES_ACTION',
+  PAID: 'PAID',
   FAILED: 'FAILED',
-  REFUNDED: 'REFUNDED'
+  REFUNDED: 'REFUNDED',
+  CANCELLED: 'CANCELLED'
 } as const
 
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const PaymentProvider = {
+  STRIPE: 'STRIPE',
+  PAYPAL: 'PAYPAL'
+} as const
+
+export type PaymentProvider = (typeof PaymentProvider)[keyof typeof PaymentProvider]

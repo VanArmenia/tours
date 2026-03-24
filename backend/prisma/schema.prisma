@@ -22,8 +22,11 @@ enum UserRole {
 
 enum BookingStatus {
   PENDING
-  PAID
+  RESERVED
+  CONFIRMED
   CANCELLED
+  EXPIRED
+  REFUNDED
   COMPLETED
 }
 
@@ -35,9 +38,16 @@ enum TourStatus {
 
 enum PaymentStatus {
   PENDING
-  SUCCESS
+  REQUIRES_ACTION
+  PAID
   FAILED
   REFUNDED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
 }
 
 model User {
@@ -150,15 +160,17 @@ model Booking {
   id String @id @default(uuid())
 
   userId String
-  user   User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   tourDateId String
-  tourDate   TourDate @relation(fields: [tourDateId], references: [id])
+  tourDate TourDate @relation(fields: [tourDateId], references: [id])
 
   peopleCount Int
-  totalPrice  Float
+  totalPrice Float
 
   status BookingStatus @default(PENDING)
+
+  expiresAt DateTime?
 
   payment Payment?
 
@@ -171,12 +183,18 @@ model Payment {
   bookingId String @unique
   booking   Booking @relation(fields: [bookingId], references: [id])
 
+  provider PaymentProvider
+  providerPaymentId String?
+
   amount   Float
   currency String
 
-  status PaymentStatus
+  status PaymentStatus @default(PENDING)
 
-  stripePaymentId String?
+  paidAt DateTime?
+  refundedAt DateTime?
+
+  rawData Json?
 
   createdAt DateTime @default(now())
 }
