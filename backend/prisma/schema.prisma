@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "generated/prisma"
+  previewFeatures = ["queryCompiler", "driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+enum UserRole {
+  TRAVELER
+  PROVIDER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  PAID
+  CANCELLED
+  COMPLETED
+}
+
+enum TourStatus {
+  DRAFT
+  ACTIVE
+  BLOCKED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(TRAVELER)
+
+  firstName    String
+  lastName     String
+  phone        String?
+
+  providerProfile ProviderProfile?
+
+  bookings Booking[]
+  reviews  Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProviderProfile {
+  id          String @id @default(uuid())
+
+  userId      String @unique
+  user        User   @relation(fields: [userId], references: [id])
+
+  companyName String?
+  description String?
+  website     String?
+
+  country     String?
+  city        String?
+
+  verified    Boolean @default(false)
+  rating      Float   @default(0)
+
+  tours Tour[]
+
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id    String @id @default(uuid())
+  name  String
+  slug  String @unique
+  icon  String?
+
+  tours Tour[]
+}
+
+model Location {
+  id        String  @id @default(uuid())
+  country   String
+  city      String
+
+  latitude  Float?
+  longitude Float?
+
+  tours Tour[]
+}
+
+model Tour {
+  id          String @id @default(uuid())
+
+  providerId  String
+  provider    ProviderProfile @relation(fields: [providerId], references: [id])
+
+  title       String
+  description String
+
+  price       Float
+  currency    String
+
+  durationMinutes Int
+  maxPeople       Int
+
+  status TourStatus @default(DRAFT)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+
+  dates   TourDate[]
+  images  Image[]
+  reviews Review[]
+
+  createdAt DateTime @default(now())
+}
+
+model TourDate {
+  id String @id @default(uuid())
+
+  tourId String
+  tour   Tour @relation(fields: [tourId], references: [id])
+
+  startTime DateTime
+  endTime   DateTime
+
+  availableSpots Int
+
+  priceOverride Float?
+
+  bookings Booking[]
+}
+
+model Booking {
+  id String @id @default(uuid())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+
+  tourDateId String
+  tourDate   TourDate @relation(fields: [tourDateId], references: [id])
+
+  peopleCount Int
+  totalPrice  Float
+
+  status BookingStatus @default(PENDING)
+
+  payment Payment?
+
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  bookingId String @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  amount   Float
+  currency String
+
+  status PaymentStatus
+
+  stripePaymentId String?
+
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id String @id @default(uuid())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+
+  tourId String
+  tour   Tour @relation(fields: [tourId], references: [id])
+
+  rating  Int
+  comment String?
+
+  createdAt DateTime @default(now())
+}
+
+model Image {
+  id String @id @default(uuid())
+
+  tourId String
+  tour   Tour @relation(fields: [tourId], references: [id])
+
+  url String
+  position Int?
+}
