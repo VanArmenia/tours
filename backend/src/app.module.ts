@@ -9,10 +9,11 @@ import { ToursModule } from './tours/tours.module';
 import { TourDatesModule } from './tour-dates/tour-dates.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { PaymentsModule } from './payments/payments.module';
+import { StripeService } from './stripe/stripe.service';
 
 @Module({
   imports: [PrismaModule, AuthModule, UsersModule, ProvidersModule, ToursModule, TourDatesModule, BookingsModule, PaymentsModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, StripeService],
 })
 export class AppModule {}
