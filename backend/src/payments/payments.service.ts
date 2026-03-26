@@ -123,12 +123,12 @@ export class PaymentsService {
       await this.prisma.booking.findUnique({
       where: { id: bookingId },
       include: {
-          payment: true,
-          tourDate: {
-          include: {
-              tour: true,
-          },
-          },
+        payment: true,
+        tourDate: {
+        include: {
+            tour: true,
+        },
+        },
       },
       })
 
@@ -141,11 +141,11 @@ export class PaymentsService {
       booking.payment ??
       (await this.prisma.payment.create({
       data: {
-          bookingId,
-          provider: 'STRIPE',
-          amount: booking.totalPrice,
-          currency: 'EUR',
-          status: 'PENDING',
+        bookingId,
+        provider: 'STRIPE',
+        amount: booking.totalPrice,
+        currency: 'EUR',
+        status: 'PENDING',
       },
       }))
 
@@ -165,26 +165,24 @@ export class PaymentsService {
             currency: 'eur',
             unit_amount:
             Math.round(
-                booking.totalPrice * 100,
+              booking.totalPrice * 100,
             ),
             product_data: {
             name:
-                booking.tourDate.tour
-                .title,
+              booking.tourDate.tour.title,
             },
           },
         },
       ],
       metadata: {
           paymentId: payment.id,
-      },
+        },
       })
 
     await this.prisma.payment.update({
         where: { id: payment.id },
         data: {
-        providerPaymentId:
-            session.id,
+        providerPaymentId: session.id,
         status: 'REQUIRES_ACTION',
         },
     })

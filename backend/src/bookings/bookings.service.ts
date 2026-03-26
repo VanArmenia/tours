@@ -34,7 +34,7 @@ export class BookingsService {
 
     const totalPrice = price * data.peopleCount
 
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000)
 
     const booking =
       await this.prisma.$transaction(

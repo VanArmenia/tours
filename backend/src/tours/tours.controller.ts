@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   UseGuards,
+  Query,
 } from '@nestjs/common'
 
 import { ToursService } from './tours.service'
@@ -30,12 +31,6 @@ export class ToursController {
     )
   }
 
-  // all tours
-  @Get()
-  getAll() {
-    return this.toursService.getAllTours()
-  }
-
   // single tour
   @Get(':id')
   getById(@Param('id') id: string) {
@@ -49,5 +44,11 @@ export class ToursController {
     return this.toursService.getMyTours(
       user.id,
     )
+  }
+
+  @Get()
+  findAll(@Query() query: any) {
+    console.log('RAW QUERY:', query)
+    return this.toursService.searchTours(query)
   }
 }

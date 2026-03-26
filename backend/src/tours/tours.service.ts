@@ -86,4 +86,121 @@ export class ToursService {
       },
     })
   }
+
+  async searchTours(query: any) {
+    const page = Number(query.page) || 1
+    const limit = Number(query.limit) || 10
+
+    const {
+      location,
+      minPrice,
+      maxPrice,
+      category,
+      date,
+      people,
+      search,
+    } = query
+
+    const filters: any[] = []
+
+    // 🔎 search
+    if (search) {
+      filters.push({
+        OR: [
+          {
+            title: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            location: {
+              city: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          },
+        ],
+      })
+    }
+
+    // 📍 location
+    if (location) {
+      filters.push({
+        location: {
+          city: {
+            contains: location,
+            mode: 'insensitive',
+          },
+        },
+      })
+    }
+
+    // 🏷 category
+    if (category) {
+      filters.push({
+        category: {
+          slug: category,
+        },
+      })
+    }
+
+    // 💰 price
+    if (minPrice || maxPrice) {
+      filters.push({
+        price: {
+          gte: minPrice ? Number(minPrice) : undefined,
+          lte: maxPrice ? Number(maxPrice) : undefined,
+        },
+      })
+    }
+
+    // 👥 capacity
+    if (people) {
+      filters.push({
+        maxPeople: {
+          gte: Number(people),
+        },
+      })
+    }
+
+    // 📅 availability
+    if (date) {
+      filters.push({
+        dates: {
+          some: {
+            startTime: {
+              gte: new Date(date),
+            },
+            availableSpots: {
+              gte: people ? Number(people) : 1,
+            },
+          },
+        },
+      })
+    }
+
+    return this.prisma.tour.findMany({
+      where: {
+        status: 'DRAFT', // 🔥 VERY IMPORTANT
+        AND: filters,
+      },
+
+      skip: (page - 1) * limit,
+      take: limit,
+
+      include: {
+        location: true,
+        category: true,
+        dates: true,
+      },
+    })
+  }
 }

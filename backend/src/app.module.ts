@@ -10,10 +10,13 @@ import { TourDatesModule } from './tour-dates/tour-dates.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { PaymentsModule } from './payments/payments.module';
 import { StripeService } from './stripe/stripe.service';
+import { ScheduleModule } from '@nestjs/schedule'
+import { CronService } from './cron/cron.service';
+import { CronModule } from './cron/cron.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, ProvidersModule, ToursModule, TourDatesModule, BookingsModule, PaymentsModule],
+  imports: [PrismaModule, AuthModule, UsersModule, ProvidersModule, ToursModule, TourDatesModule, BookingsModule, PaymentsModule, ScheduleModule.forRoot(), CronModule,],
   controllers: [AppController],
-  providers: [AppService, StripeService],
+  providers: [AppService, StripeService, CronService],
 })
 export class AppModule {}
