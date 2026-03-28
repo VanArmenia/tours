@@ -189,7 +189,7 @@ export class ToursService {
 
     return this.prisma.tour.findMany({
       where: {
-        status: 'DRAFT', // 🔥 VERY IMPORTANT
+        status: 'ACTIVE', // 🔥 VERY IMPORTANT
         AND: filters,
       },
 

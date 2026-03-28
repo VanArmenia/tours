@@ -133,6 +133,9 @@ model Tour {
   locationId String
   location   Location @relation(fields: [locationId], references: [id])
 
+  rating Float @default(0)
+  reviewsCount Int @default(0)
+
   dates   TourDate[]
   images  Image[]
   reviews Review[]
@@ -212,6 +215,8 @@ model Review {
   comment String?
 
   createdAt DateTime @default(now())
+
+  @@unique([userId, tourId]) // one review per user per tour
 }
 
 model Image {

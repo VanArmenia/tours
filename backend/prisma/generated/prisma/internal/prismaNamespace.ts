@@ -1256,6 +1256,8 @@ export const TourScalarFieldEnum = {
   status: 'status',
   categoryId: 'categoryId',
   locationId: 'locationId',
+  rating: 'rating',
+  reviewsCount: 'reviewsCount',
   createdAt: 'createdAt'
 } as const
 
