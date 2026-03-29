@@ -15,9 +15,24 @@ import { CronService } from './cron/cron.service';
 import { CronModule } from './cron/cron.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ProviderDashboardModule } from './provider-dashboard/provider-dashboard.module';
+import { AdminModule } from './admin/admin.module'
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, ProvidersModule, ToursModule, TourDatesModule, BookingsModule, PaymentsModule, ScheduleModule.forRoot(), CronModule, ReviewsModule, ProviderDashboardModule],
+  imports: [
+    PrismaModule, 
+    AuthModule, 
+    UsersModule, 
+    ProvidersModule, 
+    ToursModule, 
+    TourDatesModule, 
+    BookingsModule, 
+    PaymentsModule, 
+    ScheduleModule.forRoot(), 
+    CronModule, 
+    ReviewsModule, 
+    ProviderDashboardModule, 
+    AdminModule,
+  ],
   controllers: [AppController],
   providers: [AppService, StripeService, CronService],
 })

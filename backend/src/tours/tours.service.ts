@@ -20,6 +20,13 @@ export class ToursService {
       throw new ForbiddenException('Not a provider')
     }
 
+     // 🔥 NEW: check verification
+    if (!provider.verified) {
+      throw new ForbiddenException(
+        'Provider not verified',
+      )
+    }
+
     return this.prisma.tour.create({
       data: {
         title: data.title,

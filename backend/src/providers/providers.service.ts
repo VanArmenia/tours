@@ -14,13 +14,22 @@ export class ProvidersService {
       throw new BadRequestException('Provider already exists')
     }
 
-    return this.prisma.providerProfile.create({
+   const provider =
+    await this.prisma.providerProfile.create({
       data: {
         userId,
         companyName: data.companyName,
         description: data.description,
       },
     })
+
+     // 🔥 update user role → PROVIDER
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { role: 'PROVIDER' },
+    })
+
+    return provider
   }
 
   getAllProviders() {
