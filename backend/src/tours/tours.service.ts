@@ -5,10 +5,14 @@ import {
 } from '@nestjs/common'
 
 import { PrismaService } from '../prisma/prisma.service'
+import { CloudinaryService } from '../cloudinary/cloudinary.service'
 
 @Injectable()
 export class ToursService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cloudinary: CloudinaryService,
+  ) {}
 
   async createTour(userId: string, data: any) {
     const provider =
@@ -207,6 +211,45 @@ export class ToursService {
         location: true,
         category: true,
         dates: true,
+      },
+    })
+  }
+
+  async uploadImage(
+    userId: string,
+    tourId: string,
+    file: Express.Multer.File,
+  ) {
+    const provider =
+      await this.prisma.providerProfile.findUnique({
+        where: { userId },
+      })
+
+    if (!provider) {
+      throw new ForbiddenException()
+    }
+
+    const tour = await this.prisma.tour.findUnique({
+      where: { id: tourId },
+    })
+
+    if (!tour) {
+      throw new NotFoundException()
+    }
+
+    if (tour.providerId !== provider.id) {
+      throw new ForbiddenException()
+    }
+
+    // 🔥 upload to cloudinary
+    const result: any =
+      await this.cloudinary.uploadImage(file)
+
+    // 🔥 save in DB
+    return this.prisma.image.create({
+      data: {
+        tourId,
+        url: result.secure_url,
       },
     })
   }

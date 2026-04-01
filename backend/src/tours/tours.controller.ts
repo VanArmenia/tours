@@ -6,11 +6,14 @@ import {
   Param,
   UseGuards,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common'
 
 import { ToursService } from './tours.service'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { CurrentUser } from '../auth/current-user.decorator'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 @Controller('tours')
 export class ToursController {
@@ -48,7 +51,22 @@ export class ToursController {
 
   @Get()
   findAll(@Query() query: any) {
-    console.log('RAW QUERY:', query)
     return this.toursService.searchTours(query)
+  }
+
+  // ✅ upload image
+  @Post(':id/image')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  uploadImage(
+    @CurrentUser() user: any,
+    @Param('id') tourId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.toursService.uploadImage(
+      user.id,
+      tourId,
+      file,
+    )
   }
 }

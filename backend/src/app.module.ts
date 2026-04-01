@@ -11,7 +11,6 @@ import { BookingsModule } from './bookings/bookings.module';
 import { PaymentsModule } from './payments/payments.module';
 import { StripeService } from './stripe/stripe.service';
 import { ScheduleModule } from '@nestjs/schedule'
-import { CronService } from './cron/cron.service';
 import { CronModule } from './cron/cron.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ProviderDashboardModule } from './provider-dashboard/provider-dashboard.module';
@@ -34,6 +33,6 @@ import { AdminModule } from './admin/admin.module'
     AdminModule,
   ],
   controllers: [AppController],
-  providers: [AppService, StripeService, CronService],
+  providers: [AppService, StripeService],
 })
 export class AppModule {}
