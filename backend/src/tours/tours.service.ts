@@ -2,6 +2,7 @@ import {
   Injectable,
   ForbiddenException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common'
 
 import { PrismaService } from '../prisma/prisma.service'
@@ -251,6 +252,148 @@ export class ToursService {
         tourId,
         url: result.secure_url,
       },
+    })
+  }
+
+  async uploadMultipleImages(
+    userId: string,
+    tourId: string,
+    files: Express.Multer.File[],
+  ) {
+    const provider =
+      await this.prisma.providerProfile.findUnique({
+        where: { userId },
+      })
+
+    if (!provider) {
+      throw new ForbiddenException()
+    }
+
+    const tour = await this.prisma.tour.findUnique({
+      where: { id: tourId },
+    })
+
+    if (!tour) {
+      throw new NotFoundException()
+    }
+
+    if (tour.providerId !== provider.id) {
+      throw new ForbiddenException()
+    }
+
+    const existingCount =
+      await this.prisma.image.count({
+        where: { tourId },
+      })
+
+    if (existingCount + files.length > 10) {
+      throw new BadRequestException('Max 10 images')
+    }
+
+    const uploads = await Promise.all(
+      files.map(async (file, index) => {
+        const result: any =
+          await this.cloudinary.uploadImage(file)
+
+        return {
+          tourId,
+          url: result.secure_url,
+          position: existingCount + index,
+        }
+      }),
+    )
+
+    return this.prisma.image.createMany({
+      data: uploads,
+    })
+  }
+
+  async deleteImage(userId: string, imageId: string) {
+    const image =
+      await this.prisma.image.findUnique({
+        where: { id: imageId },
+        include: {
+          tour: true,
+        },
+      })
+
+    if (!image) {
+      throw new NotFoundException()
+    }
+
+    const provider =
+      await this.prisma.providerProfile.findUnique({
+        where: { userId },
+      })
+
+    if (!provider) {
+      throw new ForbiddenException()
+    }
+
+    if (image.tour.providerId !== provider.id) {
+      throw new ForbiddenException()
+    }
+
+    return this.prisma.image.delete({
+      where: { id: imageId },
+    })
+  }
+
+  async setCoverImage(
+    userId: string,
+    imageId: string,
+  ) {
+    const image =
+      await this.prisma.image.findUnique({
+        where: { id: imageId },
+        include: {
+          tour: true,
+        },
+      })
+
+    if (!image) {
+      throw new NotFoundException()
+    }
+
+    const provider =
+      await this.prisma.providerProfile.findUnique({
+        where: { userId },
+      })
+
+    if (!provider) {
+      throw new ForbiddenException()
+    }
+
+    if (image.tour.providerId !== provider.id) {
+      throw new ForbiddenException()
+    }
+
+    const tourId = image.tourId
+
+    return this.prisma.$transaction(async (tx) => {
+      if (image.position === 0) {
+        return image
+      }
+      // shift all images down
+      await tx.image.updateMany({
+        where: {
+          tourId,
+          NOT: { id: imageId }, // 👈 exclude selected image
+        },
+        data: {
+          position: {
+            increment: 1,
+          },
+        },
+      })
+
+      // set selected image as cover
+      return tx.image.update({
+        where: { id: imageId },
+        data: {
+          position: 0,
+        },
+      })
     })
   }
 }

@@ -8,12 +8,15 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
+  UploadedFiles,
+  Delete,
+  Patch
 } from '@nestjs/common'
 
 import { ToursService } from './tours.service'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { CurrentUser } from '../auth/current-user.decorator'
-import { FileInterceptor } from '@nestjs/platform-express'
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
 
 @Controller('tours')
 export class ToursController {
@@ -57,7 +60,14 @@ export class ToursController {
   // ✅ upload image
   @Post(':id/image')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', {
+    fileFilter: (req, file, cb) => {
+      if (!file.mimetype.startsWith('image/')) {
+        return cb(new Error('Only images allowed'), false)
+      }
+      cb(null, true)
+    },
+  }))
   uploadImage(
     @CurrentUser() user: any,
     @Param('id') tourId: string,
@@ -67,6 +77,52 @@ export class ToursController {
       user.id,
       tourId,
       file,
+    )
+  }
+
+  @Post(':id/images')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor('files', 10 , {
+    fileFilter: (req, file, cb) => {
+      if (!file.mimetype.startsWith('image/')) {
+        return cb(new Error('Only images allowed'), false)
+      }
+      cb(null, true)
+    },
+  }))
+  uploadMultiple(
+    @CurrentUser() user: any,
+    @Param('id') tourId: string,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.toursService.uploadMultipleImages(
+      user.id,
+      tourId,
+      files,
+    )
+  }
+
+  @Delete('image/:id')
+  @UseGuards(JwtAuthGuard)
+  deleteImage(
+    @CurrentUser() user: any,
+    @Param('id') imageId: string,
+  ) {
+    return this.toursService.deleteImage(
+      user.id,
+      imageId,
+    )
+  }
+
+  @Patch('image/:id/cover')
+  @UseGuards(JwtAuthGuard)
+  setCover(
+    @CurrentUser() user: any,
+    @Param('id') imageId: string,
+  ) {
+    return this.toursService.setCoverImage(
+      user.id,
+      imageId,
     )
   }
 }
