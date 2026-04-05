@@ -26,6 +26,6 @@
     "skipLibCheck": true,
 
     "outDir": "./dist",
-    "types": ["node"]
+    "types": ["node", "express", "multer"]
   }
 }

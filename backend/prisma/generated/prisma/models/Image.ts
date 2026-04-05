@@ -38,6 +38,8 @@ export type ImageMinAggregateOutputType = {
   id: string | null
   tourId: string | null
   url: string | null
+  thumbnailUrl: string | null
+  publicId: string | null
   position: number | null
 }
 
@@ -45,6 +47,8 @@ export type ImageMaxAggregateOutputType = {
   id: string | null
   tourId: string | null
   url: string | null
+  thumbnailUrl: string | null
+  publicId: string | null
   position: number | null
 }
 
@@ -52,6 +56,8 @@ export type ImageCountAggregateOutputType = {
   id: number
   tourId: number
   url: number
+  thumbnailUrl: number
+  publicId: number
   position: number
   _all: number
 }
@@ -69,6 +75,8 @@ export type ImageMinAggregateInputType = {
   id?: true
   tourId?: true
   url?: true
+  thumbnailUrl?: true
+  publicId?: true
   position?: true
 }
 
@@ -76,6 +84,8 @@ export type ImageMaxAggregateInputType = {
   id?: true
   tourId?: true
   url?: true
+  thumbnailUrl?: true
+  publicId?: true
   position?: true
 }
 
@@ -83,6 +93,8 @@ export type ImageCountAggregateInputType = {
   id?: true
   tourId?: true
   url?: true
+  thumbnailUrl?: true
+  publicId?: true
   position?: true
   _all?: true
 }
@@ -177,6 +189,8 @@ export type ImageGroupByOutputType = {
   id: string
   tourId: string
   url: string
+  thumbnailUrl: string | null
+  publicId: string | null
   position: number | null
   _count: ImageCountAggregateOutputType | null
   _avg: ImageAvgAggregateOutputType | null
@@ -207,6 +221,8 @@ export type ImageWhereInput = {
   id?: Prisma.StringFilter<"Image"> | string
   tourId?: Prisma.StringFilter<"Image"> | string
   url?: Prisma.StringFilter<"Image"> | string
+  thumbnailUrl?: Prisma.StringNullableFilter<"Image"> | string | null
+  publicId?: Prisma.StringNullableFilter<"Image"> | string | null
   position?: Prisma.IntNullableFilter<"Image"> | number | null
   tour?: Prisma.XOR<Prisma.TourScalarRelationFilter, Prisma.TourWhereInput>
 }
@@ -215,6 +231,8 @@ export type ImageOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   tourId?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  thumbnailUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicId?: Prisma.SortOrderInput | Prisma.SortOrder
   position?: Prisma.SortOrderInput | Prisma.SortOrder
   tour?: Prisma.TourOrderByWithRelationInput
 }
@@ -226,6 +244,8 @@ export type ImageWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ImageWhereInput | Prisma.ImageWhereInput[]
   tourId?: Prisma.StringFilter<"Image"> | string
   url?: Prisma.StringFilter<"Image"> | string
+  thumbnailUrl?: Prisma.StringNullableFilter<"Image"> | string | null
+  publicId?: Prisma.StringNullableFilter<"Image"> | string | null
   position?: Prisma.IntNullableFilter<"Image"> | number | null
   tour?: Prisma.XOR<Prisma.TourScalarRelationFilter, Prisma.TourWhereInput>
 }, "id">
@@ -234,6 +254,8 @@ export type ImageOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   tourId?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  thumbnailUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicId?: Prisma.SortOrderInput | Prisma.SortOrder
   position?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ImageCountOrderByAggregateInput
   _avg?: Prisma.ImageAvgOrderByAggregateInput
@@ -249,12 +271,16 @@ export type ImageScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Image"> | string
   tourId?: Prisma.StringWithAggregatesFilter<"Image"> | string
   url?: Prisma.StringWithAggregatesFilter<"Image"> | string
+  thumbnailUrl?: Prisma.StringNullableWithAggregatesFilter<"Image"> | string | null
+  publicId?: Prisma.StringNullableWithAggregatesFilter<"Image"> | string | null
   position?: Prisma.IntNullableWithAggregatesFilter<"Image"> | number | null
 }
 
 export type ImageCreateInput = {
   id?: string
   url: string
+  thumbnailUrl?: string | null
+  publicId?: string | null
   position?: number | null
   tour: Prisma.TourCreateNestedOneWithoutImagesInput
 }
@@ -263,12 +289,16 @@ export type ImageUncheckedCreateInput = {
   id?: string
   tourId: string
   url: string
+  thumbnailUrl?: string | null
+  publicId?: string | null
   position?: number | null
 }
 
 export type ImageUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tour?: Prisma.TourUpdateOneRequiredWithoutImagesNestedInput
 }
@@ -277,6 +307,8 @@ export type ImageUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tourId?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -284,12 +316,16 @@ export type ImageCreateManyInput = {
   id?: string
   tourId: string
   url: string
+  thumbnailUrl?: string | null
+  publicId?: string | null
   position?: number | null
 }
 
 export type ImageUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -297,6 +333,8 @@ export type ImageUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tourId?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -314,6 +352,8 @@ export type ImageCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tourId?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  thumbnailUrl?: Prisma.SortOrder
+  publicId?: Prisma.SortOrder
   position?: Prisma.SortOrder
 }
 
@@ -325,6 +365,8 @@ export type ImageMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tourId?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  thumbnailUrl?: Prisma.SortOrder
+  publicId?: Prisma.SortOrder
   position?: Prisma.SortOrder
 }
 
@@ -332,6 +374,8 @@ export type ImageMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tourId?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  thumbnailUrl?: Prisma.SortOrder
+  publicId?: Prisma.SortOrder
   position?: Prisma.SortOrder
 }
 
@@ -392,12 +436,16 @@ export type NullableIntFieldUpdateOperationsInput = {
 export type ImageCreateWithoutTourInput = {
   id?: string
   url: string
+  thumbnailUrl?: string | null
+  publicId?: string | null
   position?: number | null
 }
 
 export type ImageUncheckedCreateWithoutTourInput = {
   id?: string
   url: string
+  thumbnailUrl?: string | null
+  publicId?: string | null
   position?: number | null
 }
 
@@ -434,30 +482,40 @@ export type ImageScalarWhereInput = {
   id?: Prisma.StringFilter<"Image"> | string
   tourId?: Prisma.StringFilter<"Image"> | string
   url?: Prisma.StringFilter<"Image"> | string
+  thumbnailUrl?: Prisma.StringNullableFilter<"Image"> | string | null
+  publicId?: Prisma.StringNullableFilter<"Image"> | string | null
   position?: Prisma.IntNullableFilter<"Image"> | number | null
 }
 
 export type ImageCreateManyTourInput = {
   id?: string
   url: string
+  thumbnailUrl?: string | null
+  publicId?: string | null
   position?: number | null
 }
 
 export type ImageUpdateWithoutTourInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type ImageUncheckedUpdateWithoutTourInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type ImageUncheckedUpdateManyWithoutTourInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -467,6 +525,8 @@ export type ImageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   id?: boolean
   tourId?: boolean
   url?: boolean
+  thumbnailUrl?: boolean
+  publicId?: boolean
   position?: boolean
   tour?: boolean | Prisma.TourDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["image"]>
@@ -475,6 +535,8 @@ export type ImageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   tourId?: boolean
   url?: boolean
+  thumbnailUrl?: boolean
+  publicId?: boolean
   position?: boolean
   tour?: boolean | Prisma.TourDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["image"]>
@@ -483,6 +545,8 @@ export type ImageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   tourId?: boolean
   url?: boolean
+  thumbnailUrl?: boolean
+  publicId?: boolean
   position?: boolean
   tour?: boolean | Prisma.TourDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["image"]>
@@ -491,10 +555,12 @@ export type ImageSelectScalar = {
   id?: boolean
   tourId?: boolean
   url?: boolean
+  thumbnailUrl?: boolean
+  publicId?: boolean
   position?: boolean
 }
 
-export type ImageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tourId" | "url" | "position", ExtArgs["result"]["image"]>
+export type ImageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tourId" | "url" | "thumbnailUrl" | "publicId" | "position", ExtArgs["result"]["image"]>
 export type ImageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tour?: boolean | Prisma.TourDefaultArgs<ExtArgs>
 }
@@ -514,6 +580,8 @@ export type $ImagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     id: string
     tourId: string
     url: string
+    thumbnailUrl: string | null
+    publicId: string | null
     position: number | null
   }, ExtArgs["result"]["image"]>
   composites: {}
@@ -942,6 +1010,8 @@ export interface ImageFieldRefs {
   readonly id: Prisma.FieldRef<"Image", 'String'>
   readonly tourId: Prisma.FieldRef<"Image", 'String'>
   readonly url: Prisma.FieldRef<"Image", 'String'>
+  readonly thumbnailUrl: Prisma.FieldRef<"Image", 'String'>
+  readonly publicId: Prisma.FieldRef<"Image", 'String'>
   readonly position: Prisma.FieldRef<"Image", 'Int'>
 }
     

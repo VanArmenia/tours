@@ -4,9 +4,10 @@ import { ToursController } from './tours.controller'
 import { PrismaModule } from '../prisma/prisma.module'
 import { ProvidersModule } from '../providers/providers.module'
 import { CloudinaryModule } from '../cloudinary/cloudinary.module'
+import { ImageModule } from 'src/common/image/image.module'
 
 @Module({
-  imports: [PrismaModule, ProvidersModule, CloudinaryModule],
+  imports: [PrismaModule, ProvidersModule, CloudinaryModule, ImageModule],
   providers: [ToursService],
   controllers: [ToursController],
 })

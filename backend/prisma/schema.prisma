@@ -226,5 +226,7 @@ model Image {
   tour   Tour @relation(fields: [tourId], references: [id])
 
   url String
+  thumbnailUrl String?
+  publicId String?
   position Int?
 }

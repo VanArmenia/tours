@@ -1323,6 +1323,8 @@ export const ImageScalarFieldEnum = {
   id: 'id',
   tourId: 'tourId',
   url: 'url',
+  thumbnailUrl: 'thumbnailUrl',
+  publicId: 'publicId',
   position: 'position'
 } as const
 

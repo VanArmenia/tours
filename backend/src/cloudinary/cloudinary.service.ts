@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common'
 import { v2 as cloudinary } from 'cloudinary'
-import 'multer'
 
 @Injectable()
 export class CloudinaryService {
@@ -12,17 +11,34 @@ export class CloudinaryService {
     })
   }
 
-  async uploadImage(file: Express.Multer.File) {
+  async uploadBuffer(
+    buffer: Buffer,
+    folder: string,
+  ) {
     return new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
-          { folder: 'tours' },
+          {
+            folder,
+            resource_type: 'image',
+            format: 'webp', // enforce format
+            transformation: [
+              {
+                quality: 'auto',
+                fetch_format: 'auto',
+              },
+            ],
+          },
           (error, result) => {
             if (error) return reject(error)
             resolve(result)
           },
         )
-        .end(file.buffer)
+        .end(buffer)
     })
+  }
+
+  async deleteImage(publicId: string) {
+    return cloudinary.uploader.destroy(publicId)
   }
 }

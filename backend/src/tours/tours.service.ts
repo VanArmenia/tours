@@ -7,12 +7,14 @@ import {
 
 import { PrismaService } from '../prisma/prisma.service'
 import { CloudinaryService } from '../cloudinary/cloudinary.service'
+import { ImageService } from 'src/common/image/image.service'
 
 @Injectable()
 export class ToursService {
   constructor(
     private prisma: PrismaService,
     private cloudinary: CloudinaryService,
+    private imageService: ImageService,
   ) {}
 
   async createTour(userId: string, data: any) {
@@ -216,44 +218,64 @@ export class ToursService {
     })
   }
 
-  async uploadImage(
-    userId: string,
-    tourId: string,
-    file: Express.Multer.File,
-  ) {
-    const provider =
-      await this.prisma.providerProfile.findUnique({
-        where: { userId },
-      })
-
-    if (!provider) {
-      throw new ForbiddenException()
-    }
-
-    const tour = await this.prisma.tour.findUnique({
-      where: { id: tourId },
+ async uploadImage(
+  userId: string,
+  tourId: string,
+  file: Express.Multer.File,
+) {
+  const provider =
+    await this.prisma.providerProfile.findUnique({
+      where: { userId },
     })
 
-    if (!tour) {
-      throw new NotFoundException()
-    }
+  if (!provider) throw new ForbiddenException()
 
-    if (tour.providerId !== provider.id) {
-      throw new ForbiddenException()
-    }
+  const tour = await this.prisma.tour.findUnique({
+    where: { id: tourId },
+  })
 
-    // 🔥 upload to cloudinary
-    const result: any =
-      await this.cloudinary.uploadImage(file)
+  if (!tour) throw new NotFoundException()
 
-    // 🔥 save in DB
-    return this.prisma.image.create({
-      data: {
-        tourId,
-        url: result.secure_url,
-      },
-    })
+  if (tour.providerId !== provider.id) {
+    throw new ForbiddenException()
   }
+
+  // 🔥 process main image
+  const processed =
+    await this.imageService.processImage(file)
+
+  // 🔥 thumbnail
+  const thumbnail =
+    await this.imageService.generateThumbnail(file)
+
+  // upload both
+  const mainUpload: any =
+    await this.cloudinary.uploadBuffer(
+      processed,
+      `tours/${tourId}`,
+    )
+
+  const thumbUpload: any =
+    await this.cloudinary.uploadBuffer(
+      thumbnail,
+      `tours/${tourId}/thumbs`,
+    )
+
+  const count =
+    await this.prisma.image.count({
+      where: { tourId },
+    })
+
+  return this.prisma.image.create({
+    data: {
+      tourId,
+      url: mainUpload.secure_url,
+      position: count,
+      thumbnailUrl: thumbUpload.secure_url,
+      publicId: mainUpload.public_id,
+    },
+  })
+}
 
   async uploadMultipleImages(
     userId: string,
@@ -292,13 +314,30 @@ export class ToursService {
 
     const uploads = await Promise.all(
       files.map(async (file, index) => {
-        const result: any =
-          await this.cloudinary.uploadImage(file)
+        const processed =
+          await this.imageService.processImage(file)
+
+        const thumbnail =
+          await this.imageService.generateThumbnail(file)
+
+        const resultMain: any =
+          await this.cloudinary.uploadBuffer(
+            processed,
+            `tours/${tourId}`,
+          )
+
+        const resultThumb: any =
+          await this.cloudinary.uploadBuffer(
+            thumbnail,
+            `tours/${tourId}`,
+          )
 
         return {
           tourId,
-          url: result.secure_url,
+          url: resultMain.secure_url,
+          thumbnailUrl: resultThumb.secure_url,
           position: existingCount + index,
+          publicId: resultMain.public_id,
         }
       }),
     )
@@ -332,6 +371,15 @@ export class ToursService {
 
     if (image.tour.providerId !== provider.id) {
       throw new ForbiddenException()
+    }
+
+     // 🔥 DELETE FROM CLOUDINARY FIRST
+    if (image.publicId) {
+      try {
+        await this.cloudinary.deleteImage(image.publicId)
+      } catch (e) {
+        console.error('Cloudinary delete failed', e)
+      }
     }
 
     return this.prisma.image.delete({
